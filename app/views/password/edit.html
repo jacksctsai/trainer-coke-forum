@@ -1,0 +1,18 @@
+
+<? var form_placeholder = it.locale.form_placeholder; ?>
+
+<form id="login-form" action="/change_password" method="POST" accept-charset="UTF-8" >
+  <input type="hidden" name="_csrf" value="<?= it.csrf ?>"/>
+  <p id="password-title">Old password</p>
+  <input type="password" id="password" name="password">
+  <?= it.show_form_err( 'password' ) ?>
+  <p id="new-password-title">New password</p>
+  <input type="password" id="new-password" name="new_password">
+  <?= it.show_form_err( 'new_password' ) ?>
+  <p id="new-password-confirm-title">Confirm new password</p>
+  <input type="password" id="new-password-confirm" name="new_password_confirm">
+  <?= it.show_form_err( 'new_password_confirm' ) ?>
+
+  <p></p>
+  <input type="submit" value="<?- it.locale.submit_btn ?>">
+</form>

@@ -1,0 +1,35 @@
+<p>
+  <span class="header_user_first_name">First</span>
+  <span class="header_user_last_name">Last</span>
+  <span class="header_user_email">Email</span>
+  <span class="header_last_login">Last login</span>
+  <span class="header_pwd_try_error">Try Error</span>
+  <span class="header_locked">Locked</span>
+  <span class="header_verified">Verified</span>
+  <span class="header_actions"></span>
+</p>
+<hr>
+<? it.users.forEach( function( user ) { ?>
+<p>
+  <span class="first-name"><?- it.exist( user.first_name ) ?></span>
+  <span class="last-name"><?- it.exist( user.last_name ) ?></span>
+  <span class="email"><?- user.email ?></span>
+  <span class="last-login"><?- it.exist( user.last_login ) ?></span>
+  <span class="pwd-try-error"><?- user.pwd_try_error ?></span>
+  <span class="locked"><?- user.is_locked ?></span>
+  <span class="verified-on"><?- user.is_verified ?></span>
+  <span class="actions">
+    <form id="login-form" action="/user/<?- user._id ?>" method="DELETE" accept-charset="UTF-8" >
+      <input type="hidden" name="_csrf" value="<?= it.csrf ?>"/>
+      <input type="hidden" name="user_id" value="<?= user._id ?>"/>
+      <input class="submit-btn" type="submit" value="Delete">
+    </form>
+    <a href="/user/<?- user._id ?>/edit" class="link-edit-user">Edit</a>
+  </span>
+  <hr>
+</p>
+<? }); ?>
+
+<div>
+  <?= it.pager( it.current_page_no, it.max_page_no ) ?>
+</div>

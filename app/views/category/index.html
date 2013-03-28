@@ -1,0 +1,24 @@
+
+<p>
+  <span class="header-category-name">Name</span>
+  <span class="header-actions"></span>
+</p>
+<hr>
+<? it.categories.forEach( function( category ) { ?>
+<p>
+  <span class="name"><?- it.exist( category.name ) ?></span>
+  <span class="actions">
+    <a href="/category/<?- category._id ?>/edit" class="link-edit-category">Edit</a>
+  </span>
+  <hr>
+</p>
+<? }); ?>
+
+<? if( !it.categories.length ){ ?>
+<div>
+  <span>Too bad there're no category!</span>
+  <a href="/category/new" id="hint-new-category" title="Create a new category">Create one!</a>
+</div>
+<? } ?>
+
+<a href="/category/new" id="new-category" title="Create a new category">New category</a>

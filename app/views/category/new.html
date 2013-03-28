@@ -1,0 +1,11 @@
+<? var form_placeholder = it.locale_categories.form_placeholder; ?>
+
+<form id="new-category-form" action="/category/insert" method="POST" accept-charset="UTF-8" >
+  <input type="hidden" name="_csrf" value="<?= it.csrf ?>"/>
+  <p id="name-title">Category name</p>
+  <input type="text" id="name" placeholder="<?- form_placeholder.name ?>" name="name" value="<?= it.exist( it.name ) ?>">
+  <?= it.show_form_err( 'name' ) ?>
+
+  <p></p>
+  <input type="submit" value="<?- it.locale_categories.new_submit_btn ?>">
+</form>

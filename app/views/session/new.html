@@ -1,0 +1,17 @@
+<? it.nav_selected = 'login'; ?>
+
+<? var form_placeholder = it.locale.form_placeholder; ?>
+
+<form id="login-form" action="/login" method="POST" accept-charset="UTF-8" >
+  <input type="hidden" name="_csrf" value="<?= it.csrf ?>"/>
+  <p id="email-title">Email</p>
+  <input type="text" id="email" placeholder="<?- form_placeholder.email ?>" name="email" value="<?= it.exist( it.email ) ?>">
+  <?= it.show_form_err( 'email' ) ?>
+  <p id="password-title">Password</p>
+  <input type="password" id="password" placeholder="<?- form_placeholder.password ?>" name="password">
+  <?= it.show_form_err( 'password' ) ?>
+
+  <p></p>
+  <input type="submit" value="<?- it.locale.submit_btn ?>">
+  <p>Forget your password? You can reset your password <a href="/resetpwd" id="reset-password">here</a>.</p>
+</form>

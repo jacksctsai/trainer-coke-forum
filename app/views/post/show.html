@@ -1,0 +1,8 @@
+<? var form_placeholder = it.locale.form_placeholder; ?>
+<? it.title = it.post_title; ?>
+
+<a href="/board/<?= it.board_id ?>" title="Back to board">&lt; back to board</a>
+
+<pre><?- it.exist( it.body ) ?></pre>
+
+<a href="/post/<?= it.post_id ?>/edit" title="Edit">Edit</a>

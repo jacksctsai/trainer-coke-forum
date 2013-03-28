@@ -1,0 +1,42 @@
+<nav>
+  <ul>
+    <li>
+      <h3>
+        <a class="<?= it.selected( 'home', it.nav_selected ) ?>" href="/">Home</a>
+      </h3>
+    </li>
+    <? if( !it.loggedin ){ ?>
+    <li>
+      <h3>
+        <a class="<?= it.selected( 'login', it.nav_selected ) ?>" href="/login">Login</a>
+      </h3>
+    </li>
+    <li>
+      <h3>
+        <a class="<?= it.selected( 'signup', it.nav_selected ) ?>" href="/signup">Signup</a>
+      </h3>
+    </li>
+    <? } else { ?>
+    <li>
+      <h3>
+        <a class="<?= it.selected( 'logout', it.nav_selected ) ?>" href="/logout">Logout</a>
+      </h3>
+    </li>
+    <? } ?>
+    <li>
+      <h3>
+        <a class="<?= it.selected( 'users', it.nav_selected ) ?>" href="/users">Users</a>
+      </h3>
+    </li>
+    <li>
+      <h3>
+        <a class="<?= it.selected( 'boards', it.nav_selected ) ?>" href="/boards">Boards</a>
+      </h3>
+    </li>
+    <li>
+      <h3>
+        <a class="<?= it.selected( 'categories', it.nav_selected ) ?>" href="/categories">Categories</a>
+      </h3>
+    </li>
+  </ul>
+</nav>

@@ -1,0 +1,22 @@
+{
+  "name"        : "trainer-coke-forum",
+  "version"     : "0.0.1",
+  "dependencies": {
+    "coke"            : "0.14.1",
+    "connect-mongodb" : "1.1.5",
+    "express-messages": "0.0.2",
+    "express-form2"   : "1.2.0",
+    "moment"          : "2.0.0",
+    "mongoose"        : "3.6.0",
+    "node.class"      : "1.0.1",
+    "node.flow"       : "1.2.2",
+    "sitemap"         : "0.6.0",
+    "thunder"         : "0.1.6"
+  },
+  "main"    : "server",
+  "engines" : [ "node >= 0.8.0" ],
+  "licenses": [{
+    "type": "MIT",
+    "url" : "http://en.wikipedia.org/wiki/MIT_License"
+  }]
+}
