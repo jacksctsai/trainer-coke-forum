@@ -12,7 +12,7 @@
   <span class="category"><?- board.category ? board.category.name : 'Uncategorized' ?></span>
   <span class="admin"><?- board.admin ? it.exist( board.admin.first_name ) : '' ?></span>
   <span class="actions">
-    <a href="/board/<?- board._id ?>/edit" class="link-edit-board">Edit</a>
+    <a href="/boards/<?- board._id ?>/edit" class="link-edit-board">Edit</a>
   </span>
   <hr>
 </p>
@@ -21,8 +21,8 @@
 <? if( !it.boards.length ){ ?>
 <div>
   <span>There're no board!</span>
-  <a href="/board/new" id="hint-new-board" title="Create a new board">Create one!</a>
+  <a href="/boards/new" id="hint-new-board" title="Create a new board">Create one!</a>
 </div>
 <? } ?>
 
-<a href="/board/new" id="new-board" title="Create a new board">New board</a>
+<a href="/boards/new" id="new-board" title="Create a new board">New board</a>

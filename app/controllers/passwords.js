@@ -1,53 +1,60 @@
-var validate      = require( LIB_DIR + 'validations/passwords' );
-var User          = Model( 'User' );
-var Application   = require( './application' );
-var Controller    = Application.extend( validate );
-var locale_users  = require( LANG_DIR + 'en/users' );
+var validate     = require( LIB_DIR + 'validations/passwords' );
+var Application  = require( './application' );
+var Controller   = Application.extend( validate );
+var locale_users = require( LANG_DIR + 'en/users' );
+var User         = Model( 'User' );
 
 module.exports = Controller.extend({
 
   init : function ( before, after ){
     before( this.validate_create, { only : [ 'create' ]});
-    before( this.validate_update, { only : [ 'update' ] });
-
-    after( this.show_new_form, { only : [ 'new', 'create' ]});
-    after( this.show_update_form, { only : [ 'edit', 'update' ]});
+    before( this.validate_update, { only : [ 'update' ]});
+    before( this.is_email_exists, { only : [ 'create' ]});
   },
 
-  // ----- filters -------------------
-  show_new_form : function( req, res, next ){
-    var args = req.args || {};
+  // ------ filters -----------------------------------
+  is_email_exists : function ( req, res, next ){
+    User.email_to_id( req.form.email, next, next,
+      function (){
+        req.email_exists = true;
 
+        next();
+      });
+  },
+  // ------ end of filters ----------------------------
+
+  render_new : function( res ){
     res.render( 'password/new', {
       title  : locale_users.resetpwd_page_title,
-      email  : args.email,
       locale : locale_users
     });
   },
 
-  show_update_form : function( req, res, next ) {
+  render_edit : function( res ){
     res.render( 'password/edit', {
       title  : locale_users.change_password_page_title,
       locale : locale_users
     });
   },
-  // ----- end of filters ------------
 
   new : function( req, res, next ){
-    next();
+    this.render_new( res );
   },
 
   create : function( req, res, next ){
-    User.reset_password( { email : req.form.email }, next,
-      function(){
-        req.flash( 'error', locale_users.invalid_user );
-        req.args = {
-          email : req.body.email
-        };
-        next();
-      },
+    var self = this;
+    if( !req.form.isValid ){
+      return self.render_new( res );
+    }
+    if( !req.email_exists ){
+      req.flash( 'error', locale_users.invalid_user );
+
+      return self.render_new( res );
+    }
+
+    User.reset_password({ email : req.form.email }, next, next,
       function() {
-        res.render( 'password/create', {
+        res.render( 'password/created', {
           title  : locale_users.resetpwd_page_title,
           locale : locale_users
         });
@@ -55,29 +62,30 @@ module.exports = Controller.extend({
   },
 
   edit : function( req, res, next ){
-    next();
+    this.render_edit( res );
   },
 
   update : function( req, res, next ){
+    var self = this;
     var args = {
-      user_id : req.session.user_id,
-      password : req.form.password,
+      user_id      : req.session.user_id,
+      password     : req.form.password,
       new_password : req.form.new_password
     };
 
-    if( !req.form.isValid ) return next();
+    if( !req.form.isValid ) return this.render_edit( res );
 
     User.change_password( args, next,
       function() {
-        req.flash( 'error', locale_users.password_mismatch_msg );
-        next();
+        req.flash( 'error', locale_users.authentication_fail_msg );
+
+        self.render_edit( res );
       },
       function() {
-        res.render( 'password/update', {
+        res.render( 'password/updated', {
           title  : locale_users.change_password_page_title,
           locale : locale_users
         });
       });
   }
-
 });

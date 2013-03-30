@@ -19,12 +19,13 @@
   <span class="locked"><?- user.is_locked ?></span>
   <span class="verified-on"><?- user.is_verified ?></span>
   <span class="actions">
-    <form id="login-form" action="/user/<?- user._id ?>" method="DELETE" accept-charset="UTF-8" >
+    <form id="login-form" action="/users/<?- user._id ?>" method="POST" accept-charset="UTF-8" >
       <input type="hidden" name="_csrf" value="<?= it.csrf ?>"/>
+      <input type="hidden" name="_method" value="delete"/>
       <input type="hidden" name="user_id" value="<?= user._id ?>"/>
       <input class="submit-btn" type="submit" value="Delete">
     </form>
-    <a href="/user/<?- user._id ?>/edit" class="link-edit-user">Edit</a>
+    <a href="/users/<?- user._id ?>/edit" class="link-edit-user">Edit</a>
   </span>
   <hr>
 </p>

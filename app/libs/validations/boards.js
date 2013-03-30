@@ -3,6 +3,7 @@ var field = form.field;
 var r     = require( './regex' );
 var c     = require( './custom' );
 var LANG  = require( LANG_DIR + 'en/form_validation' );
+var Board = Model( 'Board' );
 
 form.configure({
   autoTrim : true

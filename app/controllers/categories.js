@@ -1,35 +1,28 @@
 var validate          = require( LIB_DIR + 'validations/categories' );
-var Category          = Model( 'Category' );
 var Application       = require( './application' );
 var Controller        = Application.extend( validate );
 var locale_categories = require( LANG_DIR + 'en/categories' );
-var Flow              = require( 'node.flow' );
+var Category          = Model( 'Category' );
 
 module.exports = Controller.extend({
 
-  init : function( before, after ){
-    before( this.validate_create, { only : [ 'create', 'update' ]});
-    before( this.get_category, { only : [ 'edit', 'update' ]});
-
-    after( this.show_new_form, { only : [ 'new', 'create' ]});
-    after( this.show_edit_form, { only : [ 'edit', 'update' ]});
+  init : function ( before, after ){
+    before( this.validate_create,  { only : [ 'create', 'update' ]});
+    before( this.current_category, { only : [ 'edit', 'update' ]});
   },
 
   // ------- filters -----------------------------
-  get_category : function( req, res, next ){
-    var args = {
-      category_id : req.params.category
-    };
+  current_category : function ( req, res, next ){
+    Category.fetch_by_id({ category_id : req.params.id }, next,
+      function ( category ){
+        req.category = category;
 
-    Category.findById( args, next, function( category ){
-      req.category = category;
-      next();
-    });
+        next();
+      });
   },
+  // ------- end of filtesr ----------------------
 
-  show_new_form : function( req, res, next ){
-    var args = req.args || {};
-
+  render_new : function ( args, res ){
     res.render( 'category/new', {
       title             : locale_categories.new_page_title,
       locale_categories : locale_categories,
@@ -38,9 +31,7 @@ module.exports = Controller.extend({
     });
   },
 
-  show_edit_form : function( req, res, next ){
-    var args = req.args;
-
+  render_edit : function ( args, res ){
     res.render( 'category/edit', {
       title    : locale_categories.update_page_title,
       name     : args.name,
@@ -48,67 +39,69 @@ module.exports = Controller.extend({
       category : args.category,
       locale   : locale_categories
     });
-
   },
-  // ------- end of filtesr ----------------------
 
-  index : function( req, res, next ){
-    Category.index( {}, next, function( categories ){
-      res.render( 'category/index', {
-        title      : locale_categories.index_page_title,
-        categories : categories
+  index : function ( req, res, next ){
+    Category.index({}, next,
+      function ( categories ){
+        res.render( 'category/index', {
+          title      : locale_categories.index_page_title,
+          categories : categories
+        });
       });
-    });
   },
 
-  new : function( req, res, next ){
-    next();
+  new : function ( req, res, next ){
+    this.render_new({}, res );
   },
 
-  create : function( req, res, next ){
+  create : function ( req, res, next ){
     var insert_args = { name : req.form.name };
-
-    req.args = {
+    var render_args = {
       name  : req.body.name,
       order : req.body.order
     };
 
-    if( !req.form.isValid ) return next();
+    if( !req.form.isValid ){
+      return this.render_new( render_args, res );
+    }
 
-    Category.insert( insert_args, next, function(){
-      res.redirect( '/categories' );
-    });
+    Category.insert( insert_args, next,
+      function (){
+        res.redirect( '/categories' );
+      });
   },
 
-  edit : function( req, res, next ){
-    req.args = {
+  edit : function ( req, res, next ){
+    var render_args = {
       name     : req.category.name,
       order    : req.category.order,
       category : req.category
     };
 
-    next();
+    this.render_edit( render_args, res );
   },
 
-  update : function( req, res, next ){
+  update : function ( req, res, next ){
     var update_args = {
-      category_id : req.params.category,
+      category_id : req.params.id,
       update_data : {
-        name : req.form.name
+        name      : req.form.name
       }
     };
-
-    req.args = {
+    var render_args = {
       name     : req.body.name,
       order    : req.body.order,
       category : req.category
     };
 
-    if( !req.form.isValid ) return next();
+    if( !req.form.isValid ){
+      return this.render_edit( render_args, res );
+    }
 
-    Category.update( update_args, next, function() {
-      res.redirect( '/categories' );
-    });
+    Category.update_props( update_args, next,
+      function (){
+        res.redirect( '/categories' );
+      });
   }
-
 });

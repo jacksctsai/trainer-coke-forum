@@ -6,7 +6,7 @@
 <? it.posts.forEach( function( post ) { ?>
 <p>
   <span class="name">
-    <a href="/post/<?= post._id ?>" title="<?- post.title ?>"><?- it.exist( post.title ) ?></a>
+    <a href="/posts/<?= post._id ?>" title="<?- post.title ?>"><?- it.exist( post.title ) ?></a>
   </span>
   <span class="admin"><?- it.exist( post.user_id.email) ?></span>
 </p>
@@ -15,11 +15,11 @@
 <? if( !it.posts.length ){ ?>
 <div>
   <span>There're no post here!</span>
-  <a href="/board/<?- it.board._id ?>/newpost" id="hint-new-post" title="Create a new post">Create one!</a>
+  <a href="/boards/<?- it.board._id ?>/posts/new" id="hint-new-post" title="Create a new post">Create one!</a>
 </div>
 <? } ?>
 
-<a href="/board/<?= it.board._id ?>/newpost" id="new-post" title="Create a new post">New Post</a>
+<a href="/boards/<?= it.board._id ?>/posts/new" id="new-post" title="Create a new post">New Post</a>
 
 <div>
   <?= it.pager( it.current_page_no, it.max_page_no ) ?>

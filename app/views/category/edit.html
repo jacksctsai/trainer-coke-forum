@@ -1,14 +1,15 @@
 <? var form_placeholder = it.locale.form_placeholder; ?>
 
-<form id="login-form" action="/category/<?- it.category._id ?>/update" method="POST" accept-charset="UTF-8" >
+<form id="login-form" action="/categories/<?- it.category._id ?>" method="POST" accept-charset="UTF-8" >
   <input type="hidden" name="_csrf" value="<?= it.csrf ?>"/>
+  <input type="hidden" name="_method" value="put" />
   <p id="name-title">Category name</p>
-  <input type="text" id="name" placeholder="<?- form_placeholder.name ?>" name="name" value="<?= it.exist( it.name ) ?>">
+  <input type="text" id="name" placeholder="<?- form_placeholder.name ?>" name="name" value="<?= it.exist( it.name ) ?>"/>
   <?= it.show_form_err( 'name' ) ?>
   <p id="Order">Order</p>
-  <input type="text" id="order" placeholder="<?- form_placeholder.order ?>" name="order" readonly="true" value="<?= it.exist( it.order ) ?>">
+  <input type="text" id="order" placeholder="<?- form_placeholder.order ?>" name="order" readonly="true" value="<?= it.exist( it.order ) ?>"/>
   <?= it.show_form_err( 'order' ) ?>
 
   <p></p>
-  <input type="submit" value="<?- it.locale.submit_btn ?>">
+  <input type="submit" value="<?- it.locale.submit_btn ?>"/>
 </form>

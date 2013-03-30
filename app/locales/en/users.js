@@ -18,7 +18,7 @@ module.exports = {
   login_failed_msg : 'Login Failed',
   user_not_verified_msg : 'This email address has to be verified to loogin',
   user_locked_msg : 'This email address has been locked, please contact ',
-  password_mismatch_msg : 'Authentication failed.',
+  authentication_fail_msg : 'Incorrect password',
   submit_btn : 'Go',
   login_link : {
     title : 'Go to login page',

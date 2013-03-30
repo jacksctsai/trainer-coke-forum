@@ -1,18 +1,18 @@
 
 <? var form_placeholder = it.locale.form_placeholder; ?>
 
-<form id="login-form" action="/update_profile" method="POST" accept-charset="UTF-8" >
+<form id="profile-form" action="/update_profile" method="POST" accept-charset="UTF-8" >
   <input type="hidden" name="_csrf" value="<?= it.csrf ?>"/>
   <p id="email-title">Email</p>
-  <input type="text" id="email" placeholder="<?- form_placeholder.email ?>" name="email" value="<?= it.exist( it.email ) ?>">
+  <input type="text" id="email" placeholder="<?- form_placeholder.email ?>" name="email" value="<?= it.exist( it.email ) ?>"/>
   <?= it.show_form_err( 'email' ) ?>
   <p id="first-name-title">First Name</p>
-  <input type="text" id="first-name" placeholder="<?- form_placeholder.first_name ?>" name="first_name" value="<?= it.exist( it.first_name ) ?>">
+  <input type="text" id="first-name" placeholder="<?- form_placeholder.first_name ?>" name="first_name" value="<?= it.exist( it.first_name ) ?>"/>
   <?= it.show_form_err( 'first_name' ) ?>
   <p id="last-name-title">Last Name</p>
-  <input type="text" id="last-name" placeholder="<?- form_placeholder.last_name ?>" name="last_name" value="<?= it.exist( it.last_name ) ?>">
+  <input type="text" id="last-name" placeholder="<?- form_placeholder.last_name ?>" name="last_name" value="<?= it.exist( it.last_name ) ?>"/>
   <?= it.show_form_err( 'last_name' ) ?>
 
   <p></p>
-  <input type="submit" value="<?- it.locale.submit_btn ?>">
+  <input type="submit" value="<?- it.locale.submit_btn ?>"/>
 </form>

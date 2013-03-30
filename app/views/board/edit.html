@@ -1,10 +1,11 @@
 <? var form_placeholder = it.locale.form_placeholder; ?>
 <? var category_id = it.category ? it.category.toString() : ''; ?>
 
-<form id="login-form" action="/board/<?- it.board._id ?>/update" method="POST" accept-charset="UTF-8" >
+<form id="login-form" action="/boards/<?- it.board._id ?>" method="POST" accept-charset="UTF-8" >
   <input type="hidden" name="_csrf" value="<?= it.csrf ?>"/>
+  <input type="hidden" name="_method" value="put" />
   <p id="name-title">Board name</p>
-  <input type="text" id="name" placeholder="<?- form_placeholder.name ?>" name="name" value="<?= it.exist( it.name ) ?>">
+  <input type="text" id="name" placeholder="<?- form_placeholder.name ?>" name="name" value="<?= it.exist( it.name ) ?>"/>
   <?= it.show_form_err( 'name' ) ?>
   <p id="category-title">Category</p>
   <select id="category" name="category">
@@ -15,12 +16,12 @@
   </select>
   <?= it.show_form_err( 'category' ) ?>
   <p id="Order">Order</p>
-  <input type="text" id="order" placeholder="<?- form_placeholder.order ?>" name="order" readonly="true" value="<?= it.exist( it.order ) ?>">
+  <input type="text" id="order" placeholder="<?- form_placeholder.order ?>" name="order" readonly="true" value="<?= it.exist( it.order ) ?>"/>
   <?= it.show_form_err( 'order' ) ?>
   <p id="category-title">Admin</p>
-  <input type="text" id="admin" placeholder="<?- form_placeholder.admin ?>" name="admin" value="<?= it.admin ?>">
+  <input type="text" id="admin" placeholder="<?- form_placeholder.admin ?>" name="admin" value="<?= it.exist( it.admin ) ?>"/>
   <?= it.show_form_err( 'admin' ) ?>
 
   <p></p>
-  <input type="submit" value="<?- it.locale.submit_btn ?>">
+  <input type="submit" value="<?- it.locale.submit_btn ?>"/>
 </form>

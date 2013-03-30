@@ -7,15 +7,16 @@
 </h2>
 <? category.boards && category.boards.forEach( function( board ){ ?>
 <p>
-  <a href="/board/<?- board._id ?>" title="<?- board.name ?>"><?- board.name ?> (<?- board.posts_count ?>)</a> <?- board.admin ? 'admin: ' + board.admin.first_name : '' ?>
+  <a href="/boards/<?- board._id ?>" title="<?- board.name ?>"><?- board.name ?> (<?- board.posts_count ?>)</a> <?- board.admin ? 'admin: ' + board.admin.first_name : ' /no admin/' ?>
 </p>
 <? }); ?>
 <? }); ?>
-
+<br/>
+<br/>
 <? if( it.loggedin ){ ?>
-<a href="/change_password" title="Chang password">Change password</a>
+<a href="/change-password" title="Chang password">Change password</a>
 |
-<a href="/update_profile" title="Update your profile">Update profile</a>
+<a href="/update-profile" title="Update your profile">Update profile</a>
 |
 <a href="/logout" title="Logout">Logout</a>
 <? } ?>

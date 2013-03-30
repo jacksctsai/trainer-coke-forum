@@ -1,14 +1,14 @@
 <? var form_placeholder = it.locale_posts.form_placeholder; ?>
 
-<form id="new-category-form" action="" method="POST" accept-charset="UTF-8" >
+<form id="new-category-form" action="/boards/<?= it.board_id ?>/posts" method="POST" accept-charset="UTF-8" >
   <input type="hidden" name="_csrf" value="<?= it.csrf ?>"/>
   <p id="post-title">Post title</p>
-  <input type="text" id="title" placeholder="<?- form_placeholder.title ?>" name="title" value="<?= it.exist( it.post_title ) ?>">
+  <input type="text" id="title" placeholder="<?- form_placeholder.title ?>" name="title" value="<?= it.exist( it.post_title ) ?>"/>
   <?= it.show_form_err( 'title' ) ?>
   <p id="post-title">Body</p>
   <textarea id="body" placeholder="<?- form_placeholder.body ?>" name="body"><?= it.exist( it.body ) ?></textarea>
   <?= it.show_form_err( 'body' ) ?>
 
   <p></p>
-  <input type="submit" value="<?- it.locale_posts.new_submit_btn ?>">
+  <input type="submit" value="<?- it.locale_posts.new_submit_btn ?>"/>
 </form>

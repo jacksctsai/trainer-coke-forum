@@ -1,4 +1,4 @@
 module.exports = function( args ){
   LOG.debug( "Email sent:" );
-  LOG.debug( args );
+  LOG.debug( JSON.stringify( args ));
 };

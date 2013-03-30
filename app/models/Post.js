@@ -16,31 +16,32 @@ module.exports = {
     show : function( id, next, ready ){
       var self = this;
 
-      this.findById( id, function( err, post ){
-        if( err ) return next( err );
+      this.fetch_by_id( id,
+        function( err, post ){
+          if( err ) return next( err );
 
-        self.find().
-          where( 'reply_to' ).eq( id )
-          sort( 'create_at' ).
-          lean().
-          exec( function( err, reply_posts, count ){
-            if( err ) return next( err );
+          self.find().
+            where( 'reply_to' ).eq( id )
+            sort( 'create_at' ).
+            lean().
+            exec( function( err, reply_posts, count ){
+              if( err ) return next( err );
 
-            ready({
-              main_post   : post,
-              reply_posts : reply_posts
-            });
-          })
-      });
+              ready({
+                main_post   : post,
+                reply_posts : reply_posts
+              });
+            })
+        });
     },
 
     search : function( keyword, next, ready ){
-      var pat = new RegExp( keyword, 'i' );
+      var pat        = new RegExp( keyword, 'i' );
       var conditions = [
-          { title : pat },
-          { body  : pat },
-          { email : pat }
-        ];
+        { title : pat },
+        { body  : pat },
+        { email : pat }
+      ];
 
       this.find().
         or( conditions ).
@@ -53,7 +54,7 @@ module.exports = {
     },
 
     insert : function( args, next, ready ){
-      var Post = this;
+      var Post     = this;
       var new_post = new Post({
         title   : args.title,
         body    : args.body,
@@ -68,38 +69,50 @@ module.exports = {
       });
     },
 
-    update : function( args, next, ready ){
-      var post_id = args.post_id;
+    update_props : function( args, next, ready ){
+      var post_id     = args.post_id;
+      var update_data = args.update_data;
 
-      this.findOneAndUpdate({
-        _id   : post_id
-      }, args.update_data, function( err, post ){
-        if( err ) return next( err );
+      this.fetch_by_id({ post_id : post_id }, next, next,
+        function( post ){
+          if( update_data.hasOwnProperty( 'title' )){
+            post.title = update_data.title;
+          }
+          if( update_data.hasOwnProperty( 'body' )){
+            post.body = update_data.body;
+          }
+          if( update_data.hasOwnProperty( 'board' )){
+            post.board = update_data.board;
+          }
+          if( update_data.hasOwnProperty( 'user_id' )){
+            post.user_id = update_data.user_id;
+          }
 
-        ready( post );
-      });
+          post.save( function( err, updated ){
+            if( err ) return next( err );
+
+            ready( updated );
+          });
+        });
     },
 
-    findById : function( args, next, not_found, ready ){
+    fetch_by_id : function( args, next, not_found, ready ){
       var post_id = args.post_id;
 
       if( !ready ){
-        ready = not_found;
-        not_found = function() {
-          next( 'Post not found' );
-        };
+        ready     = not_found;
+        not_found = function(){};
       }
 
       this.find().
         where( '_id' ).equals( post_id ).
         limit( 1 ).
         exec( function( err, post ){
-          if( err ) return next( err );
+          if( err )          return next( err );
           if( !post.length ) return not_found();
 
-          ready( post[ 0 ] );
-      });
+          ready( post[ 0 ]);
+        });
     }
   }
-
 };

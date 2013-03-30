@@ -11,7 +11,8 @@
     "node.class"      : "1.0.1",
     "node.flow"       : "1.2.2",
     "sitemap"         : "0.6.0",
-    "thunder"         : "0.1.6"
+    "thunder"         : "0.1.6",
+    "bcrypt"          : "0.7.5"
   },
   "main"    : "server",
   "engines" : [ "node >= 0.8.0" ],

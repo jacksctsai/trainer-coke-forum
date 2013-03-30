@@ -22,6 +22,13 @@ var Schema = function ( Schema ){
       update_at     : { type : Date, default : Date.now }
     }),
 
+    Category : new Schema({
+      name        : { type : String, required : true },
+      order       : { type : Number, default : 9999 },
+      create_at   : { type : Date, default : Date.now },
+      update_at   : { type : Date, default : Date.now }
+    }),
+
     Board: new Schema({
       name        : { type : String, required : true },
       admin       : { type : ObjectId, ref : 'User' },
@@ -45,24 +52,11 @@ var Schema = function ( Schema ){
       update_at   : { type : Date, default : Date.now }
     }),
 
-    Category : new Schema({
-      name        : { type : String, required : true },
-      order       : { type : Number, default : 9999 },
-      create_at   : { type : Date, default : Date.now },
-      update_at   : { type : Date, default : Date.now }
-    }),
-
     Tag : new Schema({
       name        : { type : String, required : true },
       create_at   : { type : Date, default : Date.now },
       update_at   : { type : Date, default : Date.now }
     }),
-
-    test : new Schema({
-      name      : { type : String, required : true, default : 'test' },
-      create_at : { type : Date, default : Date.now },
-      update_at : { type : Date, default : Date.now }
-    })
   };
 
   // auto update `updated_at` on save

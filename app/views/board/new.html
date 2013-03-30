@@ -1,9 +1,9 @@
 <? var form_placeholder = it.locale_boards.form_placeholder; ?>
 
-<form id="login-form" action="/board/create" method="POST" accept-charset="UTF-8" >
+<form id="login-form" action="/boards" method="POST" accept-charset="UTF-8" >
   <input type="hidden" name="_csrf" value="<?= it.csrf ?>"/>
   <p id="name-title">Board name</p>
-  <input type="text" id="name" placeholder="<?- form_placeholder.name ?>" name="name" value="<?= it.exist( it.name ) ?>">
+  <input type="text" id="name" placeholder="<?- form_placeholder.name ?>" name="name" value="<?= it.exist( it.name ) ?>"/>
   <?= it.show_form_err( 'name' ) ?>
   <p id="category-title">Category</p>
   <select id="category" name="category">
@@ -14,9 +14,9 @@
   </select>
   <?= it.show_form_err( 'category' ) ?>
   <p id="category-title">Admin</p>
-  <input type="text" id="admin" placeholder="<?- form_placeholder.admin ?>" name="admin">
+  <input type="text" id="admin" placeholder="<?- form_placeholder.admin ?>" name="admin"/>
   <?= it.show_form_err( 'admin' ) ?>
 
   <p></p>
-  <input type="submit" value="<?- it.locale_boards.submit_btn ?>">
+  <input type="submit" value="<?- it.locale_boards.submit_btn ?>"/>
 </form>
