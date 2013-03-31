@@ -12,6 +12,11 @@ module.exports = {
 
   validate_create : form(
     field( 'title' ).required( '', LANG.required.post_title ),
-    field( 'body' ).required( '', LANG.required.post_body )
+    field( 'body' ).required( '', LANG.required.post_body ),
+    field( 'board_id' ).required( '', LANG.required.board_id )
+  ),
+
+  validate_new : form(
+    field( 'board_id' ).required( '', LANG.required.board_id )
   )
 };

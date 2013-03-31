@@ -43,6 +43,7 @@ module.exports = Controller.extend({
 
   create : function( req, res, next ){
     var self = this;
+
     if( !req.form.isValid ){
       return self.render_new( res );
     }

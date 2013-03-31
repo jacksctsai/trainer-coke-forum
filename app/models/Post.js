@@ -13,21 +13,22 @@ module.exports = {
 
   statics : {
 
-    show : function( id, next, ready ){
+    show : function( args, next, success ){
       var self = this;
 
-      this.fetch_by_id( id,
+      this.findById( args.post_id,
         function( err, post ){
-          if( err ) return next( err );
+          if( err )   return next( err );
+          if( !post ) return success();
 
           self.find().
             where( 'reply_to' ).eq( id )
             sort( 'create_at' ).
             lean().
-            exec( function( err, reply_posts, count ){
+            exec( function( err, reply_posts ){
               if( err ) return next( err );
 
-              ready({
+              success({
                 main_post   : post,
                 reply_posts : reply_posts
               });
@@ -35,7 +36,7 @@ module.exports = {
         });
     },
 
-    search : function( keyword, next, ready ){
+    search : function( keyword, next, success ){
       var pat        = new RegExp( keyword, 'i' );
       var conditions = [
         { title : pat },
@@ -46,16 +47,15 @@ module.exports = {
       this.find().
         or( conditions ).
         select( 'title, user_id, board, reply_to' ).
-        exec( function( err, posts, count) {
+        exec( function( err, posts ) {
           if( err ) return next( err );
 
-          ready( posts );
+          success( posts );
         });
     },
 
-    insert : function( args, next, ready ){
-      var Post     = this;
-      var new_post = new Post({
+    insert : function( args, next, success ){
+      var new_post = new this({
         title   : args.title,
         body    : args.body,
         board   : args.board,
@@ -65,16 +65,17 @@ module.exports = {
       new_post.save( function( err, post ){
         if( err ) return next( err );
 
-        ready( post );
+        success( post );
       });
     },
 
-    update_props : function( args, next, ready ){
-      var post_id     = args.post_id;
+    update_props : function( args, next, success ){
       var update_data = args.update_data;
 
-      this.fetch_by_id({ post_id : post_id }, next, next,
-        function( post ){
+      this.findById( args.post_id,
+        function( err, post ){
+          if( err ) return next( err );
+
           if( update_data.hasOwnProperty( 'title' )){
             post.title = update_data.title;
           }
@@ -91,27 +92,8 @@ module.exports = {
           post.save( function( err, updated ){
             if( err ) return next( err );
 
-            ready( updated );
+            success( updated );
           });
-        });
-    },
-
-    fetch_by_id : function( args, next, not_found, ready ){
-      var post_id = args.post_id;
-
-      if( !ready ){
-        ready     = not_found;
-        not_found = function(){};
-      }
-
-      this.find().
-        where( '_id' ).equals( post_id ).
-        limit( 1 ).
-        exec( function( err, post ){
-          if( err )          return next( err );
-          if( !post.length ) return not_found();
-
-          ready( post[ 0 ]);
         });
     }
   }

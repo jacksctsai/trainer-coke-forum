@@ -1,8 +1,8 @@
 var validate     = require( LIB_DIR + 'validations/users' );
-var User         = Model( 'User' );
 var Application  = require( './application' );
 var Controller   = Application.extend( validate );
 var locale_users = require( LANG_DIR + 'en/users' );
+var User         = Model( 'User' );
 
 module.exports = Controller.extend({
 
@@ -10,15 +10,15 @@ module.exports = Controller.extend({
     before( this.validate_create, { only : [ 'create' ]});
     before( this.validate_update, { only : [ 'update' ]});
     before( this.validate_email,  { only : [ 'create', 'update' ]});
+    before( this.validate_index,  { only : [ 'index' ]});
     before( this.current_user,    { only : [ 'edit' ]});
   },
 
   // ------- filters ---------------------------
   current_user : function ( req, res, next ){
-    var args = { user_id : req.params.id };
-
-    User.fetch_by_id( args, next,
-      function ( user ){
+    User.findById( req.params.id,
+      function ( err, user ){
+        if( err )   return next( err );
         if( !user ) return next();
 
         req.user = user;
@@ -33,6 +33,7 @@ module.exports = Controller.extend({
         if( !req.params.id || user_id != req.params.id ){
           req.email_conflicts = true;
         }
+
         next();
       });
   },
@@ -60,7 +61,7 @@ module.exports = Controller.extend({
 
   index : function ( req, res, next ){
     var args = {
-      page_no   : parseInt( req.query.page, 10 ) || 1,
+      page_no   : req.form.page,
       page_size : 10
     };
 
@@ -153,7 +154,7 @@ module.exports = Controller.extend({
   },
 
   destroy : function( req, res, next ){
-    User.delete_by_id({ user_id : req.params.id }, next,
+    User.delete_by_id({ user_id : req.params.id }, next, next,
       function(){
         res.redirect( '/users' );
       });

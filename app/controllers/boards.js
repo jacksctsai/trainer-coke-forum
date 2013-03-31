@@ -4,6 +4,7 @@ var Controller    = Application.extend( validate );
 var locale_boards = require( LANG_DIR + 'en/boards' );
 var Board         = Model( 'Board' );
 var User          = Model( 'User' );
+var Category      = Model( 'Category' );
 
 module.exports = Controller.extend({
 
@@ -12,6 +13,7 @@ module.exports = Controller.extend({
     before( this.is_admin_user_exists, { only : [ 'create', 'update' ]});
     before( this.current_categories,   { only : [ 'new', 'create', 'edit', 'update' ]});
     before( this.current_board,        { only : [ 'edit', 'update' ]});
+    before( this.validate_show,        { only : [ 'show' ]});
 
     after( this.validation, { only : [ 'create' ]});
   },
@@ -34,7 +36,7 @@ module.exports = Controller.extend({
   },
 
   current_categories : function ( req, res, next ){
-    Model( 'Category' ).simple_index({}, next,
+    Category.simple_index({}, next,
       function ( categories ){
         req.categories = categories;
 
@@ -43,10 +45,10 @@ module.exports = Controller.extend({
   },
 
   current_board : function ( req, res, next ){
-    var args = { board_id : req.params.id };
+    Board.findById( req.params.id,
+      function ( err, board ){
+        if( err ) return next( err );
 
-    Board.fetch_by_id( args, next,
-      function ( board ){
         req.board = board;
 
         next();
@@ -107,6 +109,7 @@ module.exports = Controller.extend({
     }
     if( req.admin_not_found ){
       req.flash( 'error', locale_boards.admin_not_found );
+
       return self.render_new( render_args, res );
     }
 
@@ -179,7 +182,7 @@ module.exports = Controller.extend({
   show : function ( req, res, next ){
     var args = {
       page_size : 10,
-      page_no   : parseInt( req.query.page, 10 ) || 1,
+      page_no   : req.form.page,
       board_id  : req.params.id
     };
 

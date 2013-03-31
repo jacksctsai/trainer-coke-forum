@@ -14,8 +14,11 @@ module.exports = Controller.extend({
 
   // ----- filters -----------------------------
   current_user : function ( req, res, next ){
-    User.fetch_by_id({ user_id : req.session.user_id }, next,
-      function ( user ){
+    User.findById( req.session.user_id,
+      function ( err, user ){
+        if( err )   return next( err );
+        if( !user ) return next();
+
         req.user = user;
 
         next();

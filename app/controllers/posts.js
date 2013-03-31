@@ -7,15 +7,14 @@ var Post         = Model( 'Post' );
 module.exports = Controller.extend({
 
   init : function ( before, after ){
+    before( this.validate_new,    { only : [ 'new' ]});
     before( this.validate_create, { only : [ 'create', 'update' ]});
     before( this.current_post,    { only : [ 'edit' ]});
   },
 
   // -------- filters ------------------------------
   current_post : function ( req, res, next ){
-    var args = { post_id : req.params.id };
-
-    Post.fetch_by_id( args, next,
+    Post.findById( req.params.id, next,
       function ( post ){
         req.post = post;
 
@@ -26,11 +25,11 @@ module.exports = Controller.extend({
 
   render_new : function ( args, res ){
     res.render( 'post/new', {
-      board_id     : args.board_id,
       title        : locale_posts.new_page_title,
-      locale_posts : locale_posts,
       post_title   : args.title,
-      body         : args.body
+      body         : args.body,
+      board_id     : args.board_id,
+      locale_posts : locale_posts
     });
   },
 
@@ -45,18 +44,18 @@ module.exports = Controller.extend({
   },
 
   new : function ( req, res, next ){
-    this.render_new({ board_id : req.params.board_id }, res );
+    this.render_new({ board_id : req.form.board_id }, res );
   },
 
   create : function ( req, res, next ){
     var insert_args = {
       title   : req.form.title,
       body    : req.form.body,
-      board   : req.params.board_id,
+      board   : req.form.board_id,
       user_id : req.session.user_id
     };
     var render_args = {
-      board_id : req.params.board_id,
+      board_id : req.form.board_id,
       title    : req.body.title,
       body     : req.body.body
     };
@@ -67,7 +66,7 @@ module.exports = Controller.extend({
 
     Post.insert( insert_args, next,
       function (){
-        res.redirect( '/boards/' + req.params.board_id );
+        res.redirect( '/boards/' + req.form.board_id );
       });
   },
 
@@ -106,8 +105,9 @@ module.exports = Controller.extend({
   },
 
   show : function ( req, res, next ){
-    Post.fetch_by_id({ post_id : req.params.id }, next, next,
-      function ( post ){
+    Post.findById( req.params.id,
+      function ( err, post ){
+        if( err )   return next( err );
         if( !post ) return next();
 
         res.render( 'post/show', {

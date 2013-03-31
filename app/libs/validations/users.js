@@ -19,5 +19,9 @@ module.exports = {
   validate_update : form(
     field( 'email' ).required( '', LANG.required.email ).isEmail( LANG.invalid.email ).custom( c.emailCase ),
     field( 'is_locked' ).toBoolean()
+  ),
+
+  validate_index : form(
+    field( 'page' ).isInt( LANG.invalid.page ).toInt().custom( c.default_page )
   )
 };

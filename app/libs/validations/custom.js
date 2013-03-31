@@ -13,5 +13,11 @@ module.exports = {
     if( value == '1' || value == 'true' ) return true;
 
     return false;
+  },
+
+  default_page : function( value ){
+    if( !value ) return 1;
+
+    return value;
   }
 };

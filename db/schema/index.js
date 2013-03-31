@@ -29,17 +29,6 @@ var Schema = function ( Schema ){
       update_at   : { type : Date, default : Date.now }
     }),
 
-    Board: new Schema({
-      name        : { type : String, required : true },
-      admin       : { type : ObjectId, ref : 'User' },
-      order       : { type : Number, default: 9999 },
-      category    : { type : ObjectId, ref : 'Category' },
-      latest_post : { type : ObjectId, ref : 'Post' },
-      posts_count : { type : Number, default : 0 },
-      create_at   : { type : Date, default : Date.now },
-      update_at   : { type : Date, default : Date.now }
-    }),
-
     Post : new Schema({
       title       : { type : String, required : true },
       body        : { type : String, required : true },
@@ -48,6 +37,17 @@ var Schema = function ( Schema ){
       reply_to    : { type : ObjectId, ref : 'Post' },
       tags        : [{ type : ObjectId, ref : 'Tag' }],
       comments    : [{ type : ObjectId, ref : 'Comment' }],
+      create_at   : { type : Date, default : Date.now },
+      update_at   : { type : Date, default : Date.now }
+    }),
+
+    Board: new Schema({
+      name        : { type : String, required : true },
+      admin       : { type : ObjectId, ref : 'User' },
+      order       : { type : Number, default: 9999 },
+      category    : { type : ObjectId, ref : 'Category' },
+      latest_post : { type : ObjectId, ref : 'Post' },
+      posts_count : { type : Number, default : 0 },
       create_at   : { type : Date, default : Date.now },
       update_at   : { type : Date, default : Date.now }
     }),

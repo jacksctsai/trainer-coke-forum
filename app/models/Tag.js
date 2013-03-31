@@ -3,11 +3,11 @@ module.exports = {
 
   statics : {
 
-    index : function( args, next, ready ){
-      this.find( function( err, categories, count ){
+    index : function( args, next, success ){
+      this.find( function( err, categories ){
         if( err ) return next( err );
 
-        ready( categories );
+        success( categories );
       });
     }
   }

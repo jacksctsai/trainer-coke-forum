@@ -13,8 +13,10 @@ module.exports = Controller.extend({
 
   // ------- filters -----------------------------
   current_category : function ( req, res, next ){
-    Category.fetch_by_id({ category_id : req.params.id }, next,
-      function ( category ){
+    Category.findById( req.params.id,
+      function ( err, category ){
+        if( err ) return next( err );
+
         req.category = category;
 
         next();

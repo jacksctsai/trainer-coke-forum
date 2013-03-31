@@ -16,5 +16,9 @@ module.exports = {
     field( 'category' ),
     field( 'order' ),
     field( 'admin' ).isEmail( LANG.invalid.email ).toLower()
+  ),
+
+  validate_show : form(
+    field( 'page' ).isInt( LANG.invalid.page ).toInt().custom( c.default_page )
   )
 };

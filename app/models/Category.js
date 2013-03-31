@@ -3,39 +3,46 @@ module.exports = {
 
   statics : {
 
-    index : function( args, next, ready ){
-      this.find( function( err, categories, count ){
-        if( err ) return next( err );
+    index : function( args, next, success ){
+      this.find().
+        sort( 'order' ).
+        exec( function( err, categories ){
+          if( err ) return next( err );
 
-        ready( categories );
-      });
+          success( categories );
+        });
     },
 
-    simple_index : function( args, next, ready ){
+    simple_index : function( args, next, success ){
       this.
         find().
         select( '_id name' ).
         sort( 'order' ).
-        exec( function( err, data, count ){
+        exec( function( err, data ){
           if( err ) return next( err );
 
-          ready( data );
+          success( data );
         });
     },
 
-    insert : function( args, next, ready ){
+    insert : function( args, next, success ){
       var new_category = new this({ name : args.name });
 
-      new_category.save( function(){
-        ready();
+      new_category.save( function( err, inserted ){
+        if( err ) return next( err );
+
+        success( inserted );
       });
     },
 
-    update_props : function( args, next, ready ){
+    update_props : function( args, next, success ){
       var update_data = args.update_data;
 
-      this.fetch_by_id({ category_id : args.category_id }, next, next,
-        function( category ){
+      this.findById( args.category_id,
+        function( err, category ){
+          if( err )       return next( err );
+          if( !category ) return next();
+
           if( update_data.hasOwnProperty( 'name' )){
             category.name = update_data.name;
           }
@@ -47,25 +54,8 @@ module.exports = {
             function( err, updated ){
               if( err ) return next( err );
 
-              ready( updated );
+              success( updated );
             });
-        });
-    },
-
-    fetch_by_id : function( args, next, not_found, ready ){
-      if( !ready ){
-        ready     = not_found;
-        not_found = function(){};
-      }
-
-      this.find().
-        where( '_id' ).equals( args.category_id ).
-        limit( 1 ).
-        exec( function( err, data ){
-          if( err )          return next( err );
-          if( !data.length ) return not_found();
-
-          ready( data[ 0 ]);
         });
     }
   }

@@ -1,48 +1,49 @@
 var Flow = require( 'node.flow' );
 var User = Model( 'User' );
+var Post = Model( 'Post' );
 
 module.exports = {
 
   statics : {
 
-    index : function ( args, next, ready ){
+    index : function ( args, next, success ){
       this.find().
         populate( 'category', 'name' ).
         populate( 'admin',    'first_name email' ).
-        exec( function ( err, boards, count ){
+        exec( function ( err, boards ){
           if( err ) return next( err );
 
-          return ready( boards );
+          success( boards );
         });
     },
 
-    show : function ( args, next, ready ){
-      var page_size  = args.page_size || 0;
-      var page_no    = args.page_no || 1;
+    show : function ( args, next, success ){
+      var page_no    = args.page_no;
       var page_index = page_no - 1;
-      var Post       = Model( 'Post' );
+      var page_size  = args.page_size || 0;
       var args       = { board_id : args.board_id };
 
-      this.fetch_by_id( args, next, function ( board ){
-        Post.find().
-          where( 'board'     ).equals( args.board_id ).
-          where( 'reply_to'  ).exists( false ).
-          sort( '-update_at' ).
-          skip( page_index * page_size ).
-          limit( page_size ).
-          populate( 'user_id', 'email' ).
-          exec( function ( err, posts, count ){
-            if( err ) return next( err );
+      this.fetch_by_id( args, next,
+        function ( board ){
+          Post.find().
+            where( 'board'     ).equals( args.board_id ).
+            where( 'reply_to'  ).exists( false ).
+            sort( '-update_at' ).
+            skip( page_index * page_size ).
+            limit( page_size ).
+            populate( 'user_id', 'email' ).
+            exec( function ( err, posts ){
+              if( err ) return next( err );
 
-            ready({
-              page_no   : page_no,
-              page_size : page_size,
-              max_page  : Math.ceil( board.posts_count / page_size ),
-              board     : board,
-              posts     : posts
+              success({
+                page_no   : page_no,
+                page_size : page_size,
+                max_page  : Math.ceil( board.posts_count / page_size ),
+                board     : board,
+                posts     : posts
+              });
             });
-          });
-      });
+        });
     },
 
     insert : function ( args, next, admin_error, success ){
@@ -60,21 +61,17 @@ module.exports = {
 
       if( !args.admin ) return do_insert();
 
-      User.findIdByEmail( args.admin, next, admin_error, do_insert );
+      User.email_to_id( args.admin, next, admin_error, do_insert );
     },
 
     update_props : function ( args, next, admin_error, success ){
       var self        = this;
       var flow        = new Flow();
       var update_data = args.update_data;
-      var do_update = function (){
-        self.find().
-          where( '_id' ).equals( args.board_id ).
-          limit( 1).
-          exec( function( err, boards ){
+      var do_update   = function (){
+        self.findById( args.board_id,
+          function( err, board ){
             if( err ) return next( err );
-
-            var board = boards[ 0 ];
 
             if( update_data.hasOwnProperty( 'name' )){
               board.name = update_data.name;
@@ -112,7 +109,7 @@ module.exports = {
         });
     },
 
-    categorized_boards : function ( next, ready ){
+    categorized_boards : function ( next, success ){
       var Category = Model( 'Category' );
       var Board    = this;
       var flow     = new Flow();
@@ -123,7 +120,7 @@ module.exports = {
         sort( 'order' ).
         lean().
         exec( function ( err, docs ){
-          var queryBoard = function ( category, ready ){
+          var queryBoard = function ( category, success ){
             Board.find().
               select( 'name posts_count admin' ).
               where( 'category' ).equals( category._id ).
@@ -137,7 +134,7 @@ module.exports = {
                   boards : docs
                 });
 
-                ready();
+                success();
               });
           };
 
@@ -146,29 +143,27 @@ module.exports = {
           });
 
           flow.end( function (){
-            ready( output );
+            success( output );
           });
         });
     },
 
-    fetch_by_id : function ( args, next, not_found, ready ){
+    fetch_by_id : function ( args, next, not_found, success ){
       var board_id = args.board_id;
 
-      if( !ready ){
-        ready     = not_found;
+      if( !success ){
+        success   = not_found;
         not_found = function (){};
       }
 
       this.
-        find().
-        where( '_id' ).equals( board_id ).
+        findById( board_id ).
         populate( 'admin', 'email' ).
-        limit( 1 ).
-        exec( function ( err, data ){
-          if( err )          return next( err );
-          if( !data.length ) return not_found();
+        exec( function ( err, board ){
+          if( err )    return next( err );
+          if( !board ) return not_found();
 
-          ready( data[ 0 ]);
+          success( board );
         });
     }
   },

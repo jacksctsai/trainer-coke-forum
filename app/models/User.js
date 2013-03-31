@@ -1,5 +1,5 @@
 var mailer = require( LIB_DIR + 'mailer' );
-var crypt  = require( LIB_DIR + 'crypt' );
+var bcrypt  = require( LIB_DIR + 'bcrypt' );
 
 module.exports = {
 
@@ -11,7 +11,7 @@ module.exports = {
         password : args.password
       });
 
-      new_user.save( function ( err, user, count ){
+      new_user.save( function ( err, user ){
         if( err ) return next( err );
 
         mailer({
@@ -29,15 +29,15 @@ module.exports = {
     login : function ( args, next, not_found, failed, not_verified, locked, success ){
       var self = this;
 
-      crypt.hash_password( args.password, function ( err, encrypted ){
+      bcrypt.hash_password( args.password, function ( err, encrypted ){
         if( err ) return next( err );
 
         self.findOne({
           email : args.email
         }, function ( err, user ){
-          if( err )                        return next( err );
-          if( !user )                      return not_found();
-          if( user.is_locked )             return locked();
+          if( err )                         return next( err );
+          if( !user )                       return not_found();
+          if( user.is_locked )              return locked();
           //if( !user.is_verified ) return not_verified();
           if( user.password === encrypted ) return success( user );
 
@@ -47,16 +47,16 @@ module.exports = {
             user.is_locked = true;
           }
 
-          user.save( function ( err, user, count ){
+          user.save( function ( err, user ){
             if( err ) return next( err );
 
-            return failed();
+            failed();
           });
         });
       });
     },
 
-    verify : function ( args, next, success, failed ){
+    verify : function ( args, next, failed, success ){
       this.findOne({
         email       : args.email,
         verify_code : args.verify_code
@@ -66,7 +66,7 @@ module.exports = {
 
         user.is_verified = true;
         user.verify_code = '';
-        user.save( function ( err, user, count ){
+        user.save( function ( err, user ){
           if( err ) return next( user );
 
           success( user );
@@ -85,12 +85,12 @@ module.exports = {
 
         var new_password = UTILS.uid( 12 );
 
-        crypt.hash_password( new_password,
+        bcrypt.hash_password( new_password,
           function ( err, encrypted ){
             if( err ) return next( err );
 
             user.password = encrypted;
-            user.save( function ( err, user, count ){
+            user.save( function ( err, user ){
               if( err ) return next( err );
 
               mailer({
@@ -109,9 +109,9 @@ module.exports = {
     },
 
     index : function ( args, next, success ){
-      var page_size  = args.page_size || 0;
-      var page_no    = args.page_no || 1;
+      var page_no    = args.page_no;
       var page_index = page_no - 1;
+      var page_size  = args.page_size || 0;
       var self       = this;
 
       this.find().
@@ -136,7 +136,6 @@ module.exports = {
 
     update_props : function ( args, next, success ){
       var self        = this;
-      var user_id     = args.user_id;
       var update_data = args.update_data;
       var put_data    = function( user ){
         if( update_data.hasOwnProperty( 'email' )){
@@ -160,8 +159,9 @@ module.exports = {
         update_data.pwd_try_error = 0;
       }
 
-      this.fetch_by_id({ user_id : args.user_id }, next,
-        function ( user ){
+      this.findById( args.user_id,
+        function ( err, user ){
+          if( err )   return next( err );
           if( !user ) return next();
 
           put_data( user );
@@ -176,19 +176,17 @@ module.exports = {
 
     change_password : function ( args, next, auth_fail, success ){
       var self    = this;
-      var user_id = args.user_id;
 
-      crypt.hash_password( args.password,
+      bcrypt.hash_password( args.password,
         function ( err, old_password_encrypted ){
           if( err ) return next( err );
 
-          crypt.hash_password( args.new_password,
+          bcrypt.hash_password( args.new_password,
             function ( err, new_password_encrypted ){
               if( err ) return next( err );
 
-              self.findOne().
+              self.findById( args.user_id ).
                 select( 'password' ).
-                where( '_id' ).equals( user_id ).
                 exec( function ( err, user ){
                   if( err ) return next( err );
                   if( old_password_encrypted !== user.password ){
@@ -207,8 +205,6 @@ module.exports = {
     },
 
     email_to_id : function ( email, next, failed, success ){
-      failed = failed || function (){};
-
       this.findOne().
         where( 'email' ).equals( email ).
         select( '_id' ).
@@ -220,26 +216,16 @@ module.exports = {
         });
     },
 
-    fetch_by_id : function ( args, next, success ){
-      this.find().
-        where( '_id' ).equals( args.user_id ).
-        limit( 1 ).
-        exec( function ( err, user, count ){
-          if( err ) return next( err );
+    delete_by_id : function ( args, next, not_found, success ){
+      this.findById( args.user_id,
+        function( err, user ){
+          if( err )   return next( err );
+          if( !user ) return not_found();
 
-          success( user[ 0 ]);
-        });
-    },
-
-    delete_by_id : function ( args, next, success ){
-      this.fetch_by_id({ user_id : args.user_id }, next,
-        function( user ){
-          if( !user ) return next();
-
-          user.remove( function( err ){
+          user.remove( function( err, deleted ){
             if( err ) return next( err );
 
-            success();
+            success( deleted );
           });
         });
     }

@@ -1,8 +1,8 @@
 var validate     = require( LIB_DIR + 'validations/sessions' );
-var User         = Model( 'User' );
 var Application  = require( './application' );
 var Controller   = Application.extend( validate );
 var locale_users = require( LANG_DIR + 'en/users' );
+var User         = Model( 'User' );
 
 module.exports = Controller.extend({
 
